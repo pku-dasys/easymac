@@ -11,14 +11,12 @@ Version: `jdk-8u261-linux-x64.tar.gz`
 
 #### Environment
 Upload jdk-8u261-linux-x64.tar.gz to /your/directory/
-
-`tar jdk-8u261-linux-x64.tar.gz`
-
-`export JAVA_HOME=/your/directory/jdk1.8.0_261`
-
-`export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar`
-
-`export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH:$HOME/bin`
+```
+tar jdk-8u261-linux-x64.tar.gz
+export JAVA_HOME=/your/directory/jdk1.8.0_261
+export CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH:$HOME/bin
+```
 
 ### Install sbt
 Take Ubuntu 18.04 as an example, other OS please refer to [here](https://www.scala-sbt.org/release/docs/Setup.html)
