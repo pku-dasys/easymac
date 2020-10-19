@@ -1,4 +1,4 @@
-package tetriski.pillars.hardware
+package adder
 
 import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
