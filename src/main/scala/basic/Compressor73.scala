@@ -26,8 +26,8 @@ class Compressor73 extends Module {
 
   val fa3 = Module(new FullAdder())
   fa3.io.A := io.I(0)
-  fa3.io.B = fs1
-  fa3.io.Cin = fs2
+  fa3.io.B := fs1
+  fa3.io.Cin := fs2
   io.O(0) := fa3.io.Sum
   val fc3 = fa3.io.Cout
 

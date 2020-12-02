@@ -7,6 +7,7 @@ import chisel3.{Bundle, Input, Module, Output, UInt, _}
 //import chisel3.{Bundle, _}
 
 class PPAAnd(m:Int, n:Int) extends Module {
+  
   val io = IO(new Bundle {
     val multiplicand = Input(UInt(m.W))
     val multiplier = Input(UInt(n.W))
@@ -27,6 +28,7 @@ class PPAAnd(m:Int, n:Int) extends Module {
   }
 }
 
+/*
 object test{
   def main(args: Array[String]): Unit = {
     val topDesign = () => new PPAAnd(5, 4)
@@ -49,6 +51,6 @@ class PPATester(c: PPA) extends PeekPokeTester(c) {
   println("The result of ppa multiplier is: " + peek(c.io.multiplier).toString())
   println("The result of ppa outs(0) is: " + peek(c.io.outs(0)).toString())
   println("The result of ppa outs(1) is: " + peek(c.io.outs(1)).toString())
-}
+}*/
 
 

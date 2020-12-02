@@ -31,10 +31,10 @@ class Compressor63 extends Module {
   val fc2 = fa2.io.Cout
 
   val fa3 = Module(new FullAdder())
-  fa2.io.A := fc2
-  fa2.io.B := fc1
-  fa2.io.Cin := hc1
-  io.O(2) = fa2.io.Sum
-  io.O(3) = fa2.io.Cout
+  fa3.io.A := fc2
+  fa3.io.B := fc1
+  fa3.io.Cin := hc1
+  io.O(1) := fa3.io.Sum
+  io.O(2) := fa3.io.Cout
 
 }

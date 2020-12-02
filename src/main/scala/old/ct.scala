@@ -18,14 +18,14 @@ class MyTrans(m: Int, n: Int, wire: Data) {
       if (trans || x >= n) {
         index = x * (x - 1) / 2 + y
       } else {
-        index = x * (x - 1) / 2 + y - (n - x)ls
+        index = x * (x - 1) / 2 + y - (n - x)
 
         println(x, y, index)
       }
       data(index - 1)
     } else if (x <= m) {
       index = n * (n + 1) / 2 + n * (x - 1 - n) + y
-      data(index - 1)ls
+      data(index - 1)
 
     } else {
       index = n * (n + 1) / 2 + n * (m - n) + (2 * n + m - x) * (x - 1 - m) / 2 + y

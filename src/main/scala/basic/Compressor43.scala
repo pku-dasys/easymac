@@ -11,7 +11,7 @@ class Compressor43 extends Module {
     val O = Output(UInt(3.W))
     })
 
-  val fa1 := Module(new FullAdder())
+  val fa1 = Module(new FullAdder())
   fa1.io.A := io.I(1)
   fa1.io.B := io.I(2)
   fa1.io.Cin := io.I(3)
@@ -21,12 +21,12 @@ class Compressor43 extends Module {
   val ha1 = Module(new HalfAdder())
   ha1.io.A := io.I(0)
   ha1.io.B := fs1
-  io.O(0) := ha1.IO.Sum 
+  io.O(0) := ha1.io.Sum 
   val hc1 = ha1.io.Cout
 
   val ha2 = Module(new HalfAdder())
-  fa3.io.A := hc1
-  fa3.io.B := fc1
+  ha2.io.A := hc1
+  ha2.io.B := fc1
   io.O(1) := ha2.io.Sum
   io.O(2) := ha2.io.Cout
 
