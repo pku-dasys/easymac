@@ -7,10 +7,9 @@ import chisel3.{Bundle, Input, Module, Output, UInt, _}
 import scala.io.Source
 import scala.util.control._
 
-object ReadPPA {
-  def readFromPPATxt(filePath:String) = {
+object ReadWT {
+  def readFromWTTxt(filePath:String) = {
     val source = Source.fromFile(filePath, "UTF-8")
-
     val lines = source.getLines().toArray
     source.close
     lines
@@ -19,12 +18,11 @@ object ReadPPA {
   // get bits of an adder
   def getBits(array:Array[String]) : List[Int] = {
     val inputbits = array(0).trim.split(" ")
-    //val res = inputbits(0).toInt :: inputbits(1).toInt :: Nil
-    val res = inputbits(0).toInt :: Nil
+    val res = inputbits(0).toInt :: inputbits(1).toInt :: Nil
     res
   }
 
-  // get the number of prefix cells
+  // get the number of compressors
   def getNumCells(array:Array[String]) : List[Int] = {
     val numcells = array(1).trim.split(" ")
     val res = numcells(0).toInt:: Nil
@@ -38,16 +36,18 @@ object ReadPPA {
     res
   }
 
-  // get depth of a prefix graph
+  // get depth of a wallace tree
   def getDepth(myarch:List[Int]) : Int = {
     val len = myarch.length
     var dep = 1
     var ind = 500
-    for (i <- 0 until len) {
+    var i = 0
+    while (i < len) {
       if (myarch(i) > ind) {
-        dep = dep + 1
+        dep += 1
       }
       ind = myarch(i)
+      i += 2
     }
     dep
   }

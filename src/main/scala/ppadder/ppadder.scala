@@ -11,18 +11,6 @@ import java.io.File
 
 import scala.io.Source
 
-//import collection.mutable.Map
-/*
-class PPAdder(n:Int) extends Module {
-  
-  val io = IO(new Bundle {
-    val augend = Input(UInt(n.W))
-    val addend = Input(UInt(n.W))
-    val outs = Output(UInt(n.W))
-  })
-  io.outs := io.addend + io.augend
-}*/
-
 class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Map[List[Int], List[Int]], post:Map[Int, Int]) extends Module {
   val io = IO(new Bundle {
     val augend = Input(UInt(n.W))
@@ -31,9 +19,6 @@ class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Ma
   })
   
   // pre-computations
-
-  //val debugg = (0 until n).map(i => Wire(UInt(1.W))) // debug
-  //val debugp = (0 until n).map(i => Wire(UInt(1.W))) // debug
 
   var GMap = Map[List[Int], Data]()
   var PMap = Map[List[Int], Data]()
