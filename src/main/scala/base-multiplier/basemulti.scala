@@ -13,7 +13,7 @@ class BasicMultiplier(m: Int, n:Int) extends Module{
   })
   io.res := io.multiplicand * io.multiplier
 }
-
+/*
 object test{
   def main(args: Array[String]): Unit = {
     val topDesign = () => new BasicMultiplier(8, 8)
@@ -35,4 +35,4 @@ class BasicMultiplierTester(c: BasicMultiplier) extends PeekPokeTester(c) {
   println("The result of 20 * 30 with is: " + peek(c.io.res).toString())
 
   expect(c.io.res, 600)
-}
+}*/
