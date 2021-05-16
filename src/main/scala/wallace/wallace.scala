@@ -20,6 +20,24 @@ class PPAdder(n:Int) extends Module {
   })
   io.outs := io.addend + io.augend
 }
+/*
+class Wallace(n:Int) extends Module {
+  val io = IO(new Bundle {
+    val pp = Input(Vec(n, UInt(m.W))
+    val augend = Output(UInt((n+m).W))
+    val addend = Outpus(UInt((n+m).W))
+  })
+  
+  var ValueMap = Map[List[Int], Data]
+
+  for (i <- 0 until n) {
+    for (j <- 0 until m) {
+      ValueMap += List(i, j+i) -> io.pp(i)(j)
+    }
+  }
+
+  
+}*/
 
 object test{
   val usage = """
@@ -51,6 +69,9 @@ object test{
 
     val depth = ReadWT.getDepth(myarch)
     println(depth)
+
+    val inedges = ReadWT.getIn(m, n, myarch)
+    println(inedges)
 
     val topDesign = () => new PPAdder(8)
     chisel3.Driver.execute(Array("-td", "./RTL/wt"), topDesign)

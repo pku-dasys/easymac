@@ -52,107 +52,62 @@ object ReadWT {
     dep
   }
 
-  
-  def genPEdge(n:Int, dep:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
+  /// @params[out]: key List[Int] = (column, depth, id), value List[Int] = (row, column)
+  def getIn(n:Int, m:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
     val len = myarch.length
-    //var vis = (0 until n).map(i => 0).toList
-    var pedge = Map[List[Int], List[Int]]()
-    var isprefix = Map[List[Int], Int]()
+    var edgein = Map[List[Int], List[Int]]()
 
-    // initialize isprefix
-    for (i <- 0 until n) {
-      isprefix += List(-1, i) -> 1
-    }
-    for (i <- 0 until dep) {
-      for (j <- -1 until n) {
-        isprefix += List(i, j) -> 0
-      }
+    // record the lst pos of each column
+    var pos = Map[Int, Int]()
+
+    // count the number of each column of each depth
+    var cnt = new Array[Int](256)
+
+    for (i <- 0 until (n+m)) {
+      pos += i -> 0
+      cnt(i) = 0
     }
 
     var depth = 0
-    var ind_dep = 500
-    for (i <- 0 until len) {
-      if (myarch(i) > ind_dep) {
-        depth = depth + 1
-      }
-      var flag = true
-      var tmpd = depth
-      while (flag == true) {
-        var ind_pre = myarch(i)
-        while (ind_pre >= 0 && flag == true) {
-          //println("debug: " + myarch(i) + " " + depth)
-          //println("find:" + (tmpd-1).toString + " " + (ind_pre-1).toString)
-          if (isprefix(List(tmpd-1, ind_pre-1)) == 1) {
-            //println("ddebug: " + List(tmpd-1, ind_pre-1))
-            pedge += List(depth, myarch(i)) -> List(tmpd-1, ind_pre-1)
-            isprefix += List(depth, myarch(i)) -> 1
-            flag = false
-          } else {
-            ind_pre -= 1
-          }
+    var ind = 500
+    var i = 0
+    while(i < len) {
+      if (myarch(i) > ind) {
+        depth += 1
+        for (j <- 0 until (n+m)) {
+          cnt(j) = 0
         }
-        tmpd -= 1
       }
-      ind_dep = myarch(i)
+      ind = myarch(i)
+      cnt(myarch(i)) += 1
+      var tmp = pos(myarch(i))
+      edgein += List(myarch(i), depth, cnt(myarch(i))) -> List(tmp, myarch(i))
+      if (myarch(i+1) == 0) {      
+        pos += myarch(i) -> (tmp + 2)
+      }
+      else if (myarch(i+1) == 1) {       
+        pos += myarch(i) -> (tmp + 3)
+      } else {
+        println("Wrong compressor types!")
+      }
+      i += 2
     }
-    pedge
+    edgein
   }
 
-  def genGEdge(n:Int, dep:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
+
+  /// @params[out]: key List[int] = (column, depth, id), value List[Int] = (row, column)
+  
+  def getG(n:Int, dep:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
     val len = myarch.length
     var gedge = Map[List[Int], List[Int]]()
     var isprefix = Map[List[Int], Int]()
-
-    // initialize isprefix
-    for (i <- 0 until n) {
-      isprefix += List(-1, i) -> 1
-    }
-    for (i <- 0 until dep) {
-      for (j <- -1 until n) {
-        isprefix += List(i, j) -> 0
-      }
-    }
-    var depth = 0
-    var ind_dep = 500
-    for (i <- 0 until len) {
-      //println("debug: " + myarch(i) + " " + depth)
-      if (myarch(i) > ind_dep) {
-        depth = depth + 1
-      }
-      var flag = true
-      var ind = depth-1
-      while (flag == true && ind >= -1) {
-        if (isprefix(List(ind, myarch(i))) == 1) {
-          //println("ddebug: " + List(ind, myarch(i)))
-          gedge += List(depth, myarch(i)) -> List(ind, myarch(i))
-          isprefix +=List(depth, myarch(i)) -> 1
-          flag = false
-        } else {
-          ind -= 1
-        }
-      }
-      ind_dep = myarch(i)
-    }
-    gedge
   }
 
-  def genFinal(n:Int, myarch:List[Int]) : Map[Int, Int] = {
-    var res = Map[Int, Int]()
-    for (i <- 0 until n) {
-      res += i -> -1
-    }
+  /*
+  /// @params[out]: key List[int] = (column, depth, id), value List[Int] = (row, column)
+  def getP(n:Int, dep:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
 
-    val len = myarch.length
-    var ind_dep = 500
-    var depth = 0
-    for (i <- 0 until len) {
-      if (myarch(i) > ind_dep) {
-        depth = depth + 1
-      }
-      res += myarch(i) -> depth
-      ind_dep = myarch(i)
-    }
-    res
-  }
+  }*/
   
 }
