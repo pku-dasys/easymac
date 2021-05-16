@@ -73,6 +73,12 @@ object test{
     val inedges = ReadWT.getIn(m, n, myarch)
     println(inedges)
 
+    val outedges = ReadWT.getOut(m, n, myarch)
+    println(outedges)
+
+    val res = ReadWT.getRes(m, n, myarch)
+    println(res)
+
     val topDesign = () => new PPAdder(8)
     chisel3.Driver.execute(Array("-td", "./RTL/wt"), topDesign)
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
