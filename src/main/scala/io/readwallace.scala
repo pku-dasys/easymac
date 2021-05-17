@@ -55,7 +55,7 @@ object ReadWT {
   /// @params[out]: key List[Int] = (column, depth, id), value List[Int] = (row, column)
   def getIn(m:Int, n:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
     val len = myarch.length
-    var edgein = Map[List[Int], List[Int]]()
+    var edgesin = Map[List[Int], List[Int]]()
 
     // record the lst pos of each column
     var pos = Map[Int, Int]()
@@ -81,7 +81,7 @@ object ReadWT {
       ind = myarch(i)
       cnt(myarch(i)) += 1
       var tmp = pos(myarch(i))
-      edgein += List(myarch(i), depth, cnt(myarch(i))) -> List(tmp, myarch(i))
+      edgesin += List(myarch(i), depth, cnt(myarch(i))) -> List(tmp, myarch(i))
       if (myarch(i+1) == 0) {      
         pos += myarch(i) -> (tmp + 2)
       }
@@ -92,14 +92,14 @@ object ReadWT {
       }
       i += 2
     }
-    edgein
+    edgesin
   }
 
 
   /// @params[out]: key List[int] = (column, depth, id), value List[Int] = (row of gen, column of gen, row of pro, column of pro)
   def getOut(m:Int, n:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
     val len = myarch.length
-    var edgeout = Map[List[Int], List[Int]]()
+    var edgesout = Map[List[Int], List[Int]]()
 
     // record the lst pos of each column
     var pos = Map[Int, Int]()
@@ -146,12 +146,12 @@ object ReadWT {
       cnt(myarch(i)) += 1
       var tmp = pos(myarch(i))
       var tmp1 = pos(myarch(i)+1)
-      edgeout += List(myarch(i), depth, cnt(myarch(i))) -> List(tmp, myarch(i), tmp1, myarch(i)+1)
+      edgesout += List(myarch(i), depth, cnt(myarch(i))) -> List(tmp, myarch(i), tmp1, myarch(i)+1)
       pos += myarch(i) -> (tmp+1)
       pos += (myarch(i)+1) -> (tmp1+1)
       i += 2
     }
-    edgeout
+    edgesout
   }
 
   

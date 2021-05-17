@@ -11,24 +11,14 @@ import java.io.File
 
 import scala.io.Source
 
-class PPAdder(n:Int) extends Module {
-  
+class Wallace(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]], outedges:Map[List[Int], List[Int]], res:Map[Int, List[Int]]) extends Module {
   val io = IO(new Bundle {
-    val augend = Input(UInt(n.W))
-    val addend = Input(UInt(n.W))
-    val outs = Output(UInt(n.W))
-  })
-  io.outs := io.addend + io.augend
-}
-/*
-class Wallace(n:Int) extends Module {
-  val io = IO(new Bundle {
-    val pp = Input(Vec(n, UInt(m.W))
+    val pp = Input(Vec(n, UInt(m.W)))
     val augend = Output(UInt((n+m).W))
-    val addend = Outpus(UInt((n+m).W))
+    val addend = Output(UInt((n+m).W))
   })
   
-  var ValueMap = Map[List[Int], Data]
+  var ValueMap = Map[List[Int], Data]()
 
   for (i <- 0 until n) {
     for (j <- 0 until m) {
@@ -36,8 +26,56 @@ class Wallace(n:Int) extends Module {
     }
   }
 
-  
-}*/
+  val len = myarch.length
+  var depth = 0
+  var ind = 500
+  var i = 0
+  var cnt = new Array[Int](256)
+  while(i < len) {
+  	if (myarch(i) > ind) {
+      depth += 1
+      for (j <- 0 until (n+m)) {
+        cnt(j) = 0
+      }
+    }
+    ind = myarch(i)
+    cnt(myarch(i)) += 1
+
+    if (myarch(i+1) == 0) {
+      val cmp22 = Module(new HalfAdder)
+      val tmpin = inedges(List(myarch(i), depth, cnt(myarch(i))))
+      cmp22.io.a := ValueMap(List(tmpin(0), tmpin(1)))
+      cmp22.io.b := ValueMap(List(tmpin(0)+1, tmpin(1)))
+      val tmpout = outedges(List(myarch(i), depth, cnt(myarch(i))))
+      ValueMap += List(tmpout(0), tmpout(1)) -> cmp22.io.s
+      ValueMap += List(tmpout(2), tmpout(3)) -> cmp22.io.co
+    }
+    else if (myarch(i+1) == 1) {
+      val cmp32 = Module(new FullAdder)
+      val tmpin = inedges(List(myarch(i), depth, cnt(myarch(i))))
+      cmp32.io.a := ValueMap(List(tmpin(0), tmpin(1)))
+      cmp32.io.b := ValueMap(List(tmpin(0)+1, tmpin(1)))
+      cmp32.io.ci := ValueMap(List(tmpin(0)+2, tmpin(1)))
+      val tmpout = outedges(List(myarch(i), depth, cnt(myarch(i))))
+      ValueMap += List(tmpout(0), tmpout(1)) -> cmp32.io.s
+      ValueMap += List(tmpout(2), tmpout(3)) -> cmp32.io.co
+    }
+  	i += 2
+  }
+  val res0 = (0 until n).map(i => Wire(UInt(1.W)))
+  val res1 = (0 until n).map(i => Wire(UInt(1.W)))
+
+  for (j <- 0 until (m+n)) {
+  	res0(j) := ValueMap(List(res(j)(0), j))
+  	if (res(j)(1) == -1) {
+  	  res1(j) := 0.asUInt()
+  	} else {
+  	  res1(j) := ValueMap(List(res(j)(1), j))
+  	}
+  }
+  io.augend := res0.reverse.reduce(Cat(_,_))
+  io.addend := res1.reverse.reduce(Cat(_,_))
+}
 
 object test{
   val usage = """
@@ -79,27 +117,29 @@ object test{
     val res = ReadWT.getRes(m, n, myarch)
     println(res)
 
-    val topDesign = () => new PPAdder(8)
+    val topDesign = () => new Wallace(m, n, myarch, inedges, outedges, res)
     chisel3.Driver.execute(Array("-td", "./RTL/wt"), topDesign)
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
-      c => new PPAdderTester(c)
+      c => new WallaceTester(c)
     }
 
-    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new PPAdder(8)) {
-      c => new PPAdderTester(c)
+    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new Wallace(m, n, myarch, inedges, outedges, res)) {
+      c => new WallaceTester(c)
     }
   }
 }
 
-class PPAdderTester(c: PPAdder) extends PeekPokeTester(c) {
-  poke(c.io.augend, 1)
-  poke(c.io.addend, 5)
+class WallaceTester(c: Wallace) extends PeekPokeTester(c) {
+  poke(c.io.pp(0), 0)
+  poke(c.io.pp(1), 5)
+  poke(c.io.pp(2), 0)
+  poke(c.io.pp(3), 0)
   
   step(1)
-  println("The addend of parallel prefix adder is: " + peek(c.io.addend).toString())
-  println("The result of parallel prefix adder is: " + peek(c.io.outs).toString())
+  //println("The addend of parallel prefix adder is: " + peek(c.io.addend).toString())
+  //println("The result of parallel prefix adder is: " + peek(c.io.outs).toString())
 
-  println("The result of 1 + 5 with is: " + peek(c.io.outs).toString())
+  println("The result of 5*2 with is: " + peek(c.io.augend).toString())
 
-  expect(c.io.outs, 6)
+  expect(c.io.augend, 8)
 }

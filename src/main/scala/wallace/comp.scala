@@ -1,4 +1,4 @@
-package mulitiplier
+package wallace
 
 import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
