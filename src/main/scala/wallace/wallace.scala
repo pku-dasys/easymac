@@ -22,10 +22,23 @@ class Wallace(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]],
 
   for (i <- 0 until n) {
     for (j <- 0 until m) {
-      ValueMap += List(i, j+i) -> io.pp(i)(j)
+      var tmpx = i
+      var tmpy = i+j
+      var fy = tmpy
+      var fx = 0
+      var sum = tmpx + tmpy
+      if (sum > m) {
+      	fx = tmpx - tmpy + m - 1
+      } else {
+      	fx = tmpx
+      }
+      //println("(" + i + " " + j + ")" + "->" + "(" + tmpx + " " + tmpy + ")" + "->" + "(" + fx + " " + fy + ")")
+      ValueMap += List(fx, fy) -> io.pp(i)(j)
     }
   }
 
+  //println("finish initialize")
+  //println("test value (0,4) = " + ValueMap(List(0, 4)))
   val len = myarch.length
   var depth = 0
   var ind = 500
@@ -59,24 +72,34 @@ class Wallace(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]],
       val tmpout = outedges(List(myarch(i), depth, cnt(myarch(i))))
       ValueMap += List(tmpout(0), tmpout(1)) -> cmp32.io.s
       ValueMap += List(tmpout(2), tmpout(3)) -> cmp32.io.co
+      //println("my test co = " + List(tmpout(2), tmpout(3)) )
     }
   	i += 2
+  	//println("finish i-th compressor = " + i)
   }
-  val res0 = (0 until n).map(i => Wire(UInt(1.W)))
-  val res1 = (0 until n).map(i => Wire(UInt(1.W)))
+  val res0 = (0 until (m+n-1)).map(i => Wire(UInt(1.W)))
+  val res1 = (0 until (m+n-1)).map(i => Wire(UInt(1.W)))
 
-  for (j <- 0 until (m+n)) {
+  //println("res map = " + ValueMap)
+
+  for (j <- 0 until (m+n-1)) {
+  	//println("res = " + res(j))
+  	//println("index = " + List(res(j)(0), j))
   	res0(j) := ValueMap(List(res(j)(0), j))
+  	//println("valuemap = " + List(res(j)(0), j))
   	if (res(j)(1) == -1) {
   	  res1(j) := 0.asUInt()
   	} else {
+  	  //println("test = " + List(res(j)(1), j))
   	  res1(j) := ValueMap(List(res(j)(1), j))
   	}
+  	//println("finish column = " + j)
   }
   io.augend := res0.reverse.reduce(Cat(_,_))
   io.addend := res1.reverse.reduce(Cat(_,_))
 }
 
+/*
 object test{
   val usage = """
       Usage: readwt [--wallace-file filename1]
@@ -142,4 +165,4 @@ class WallaceTester(c: Wallace) extends PeekPokeTester(c) {
   println("The result of 5*2 with is: " + peek(c.io.augend).toString())
 
   expect(c.io.augend, 8)
-}
+}*/

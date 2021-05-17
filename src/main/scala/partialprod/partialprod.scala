@@ -16,11 +16,12 @@ class PartialProd(m: Int, n:Int) extends Module {
   	  tmp(j) := io.multiplicand(j) & io.multiplier(i)
   	  //printf(p"tmp(j) = ${tmp(j)}\n")
   	}
-  	io.outs(i) := tmp.reverse.reduce(Cat(_,_))
+  	//io.outs(i) := tmp.reverse.reduce(Cat(_,_))
+    io.outs(i) := tmp.reverse.reduce(Cat(_,_))
   	//printf(p"io.outs(i) = ${io.outs(i)}\n")
   }
 }
-
+/*
 object test{
   def main(args: Array[String]): Unit = {
 
@@ -49,4 +50,4 @@ class PartialProdTester(c: PartialProd) extends PeekPokeTester(c) {
   expect(c.io.outs(0), 0)
   expect(c.io.outs(1), 5)
   expect(c.io.outs(2), 0)
-}
+}*/

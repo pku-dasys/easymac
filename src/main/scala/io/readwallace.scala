@@ -230,7 +230,7 @@ object ReadWT {
       else if (resi(j) == 2) {
         res += j -> List(pos(j)-2, pos(j)-1)
       } else {
-        println("Wrong Compressors Results!")
+        println("Wrong Compressors Results! and column = " + j)
       }
     }
     res

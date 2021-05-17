@@ -85,7 +85,7 @@ class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Ma
   //io.outs := res
 }
 
-
+/*
 object test{
   val usage = """
       Usage: generate [--input1-bit input1] [--input2-bit input2] [--compressor-file filename1] [--prefix-adder-file filename2]
@@ -150,4 +150,4 @@ class PPAdderTester(c: PPAdder) extends PeekPokeTester(c) {
   println("The result of 12345 + 54321 with is: " + peek(c.io.outs).toString())
 
   expect(c.io.outs, 66666)
-}
+}*/
