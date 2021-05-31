@@ -13,26 +13,26 @@ class BasicMultiplier(m: Int, n:Int) extends Module{
   })
   io.res := io.multiplicand * io.multiplier
 }
-/*
+
 object test{
   def main(args: Array[String]): Unit = {
-    val topDesign = () => new BasicMultiplier(8, 8)
+    val topDesign = () => new BasicMultiplier(16, 16)
     chisel3.Driver.execute(Array("-td", "./RTL/basicmulti"), topDesign)
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
       c => new BasicMultiplierTester(c)
     }
 
-    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new BasicMultiplier(8, 8)) {
+    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new BasicMultiplier(16, 16)) {
       c => new BasicMultiplierTester(c)
     }
   }
 }
 
 class BasicMultiplierTester(c: BasicMultiplier) extends PeekPokeTester(c) {
-  poke(c.io.multiplicand, 20)
-  poke(c.io.multiplier, 30)
+  poke(c.io.multiplicand, 15)
+  poke(c.io.multiplier, 8)
 
-  println("The result of 20 * 30 with is: " + peek(c.io.res).toString())
+  println("The result of 15 * 8 with is: " + peek(c.io.res).toString())
 
-  expect(c.io.res, 600)
-}*/
+  expect(c.io.res, 120)
+}
