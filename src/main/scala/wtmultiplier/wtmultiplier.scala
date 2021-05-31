@@ -116,12 +116,12 @@ object test{
 }
 
 class WTMultiplierTester(c: WTMultiplier) extends PeekPokeTester(c) {
-  poke(c.io.multiplicand, 5)
-  poke(c.io.multiplier, 2)
+  poke(c.io.multiplicand, 15)
+  poke(c.io.multiplier, 8)
   
   step(1)
 
-  println("The result of 5 * 2 with is: " + peek(c.io.outs).toString())
+  println("The result of 15 * 8 with is: " + peek(c.io.outs).toString())
 
-  expect(c.io.outs, 10)
+  expect(c.io.outs, 120)
 }

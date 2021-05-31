@@ -26,11 +26,11 @@ class Wallace(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]],
       var tmpy = i+j
       var fy = tmpy
       var fx = 0
-      var sum = tmpx + tmpy
-      if (sum > m) {
-      	fx = tmpx - tmpy + m - 1
+      if (tmpy >= m) {
+        var move = tmpy-m+1
+        fx = tmpx-move
       } else {
-      	fx = tmpx
+        fx = tmpx
       }
       //println("(" + i + " " + j + ")" + "->" + "(" + tmpx + " " + tmpy + ")" + "->" + "(" + fx + " " + fy + ")")
       ValueMap += List(fx, fy) -> io.pp(i)(j)
