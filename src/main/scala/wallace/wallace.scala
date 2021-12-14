@@ -45,7 +45,7 @@ class Wallace(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]],
   var i = 0
   var cnt = new Array[Int](256)
   while(i < len) {
-  	if (myarch(i) > ind) {
+    if (myarch(i) > ind) {
       depth += 1
       for (j <- 0 until (n+m)) {
         cnt(j) = 0
@@ -74,8 +74,8 @@ class Wallace(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]],
       ValueMap += List(tmpout(2), tmpout(3)) -> cmp32.io.co
       //println("my test co = " + List(tmpout(2), tmpout(3)) )
     }
-  	i += 2
-  	//println("finish i-th compressor = " + i)
+    i += 2
+    //println("finish i-th compressor = " + i)
   }
   val res0 = (0 until (m+n-1)).map(i => Wire(UInt(1.W)))
   val res1 = (0 until (m+n-1)).map(i => Wire(UInt(1.W)))
@@ -83,17 +83,137 @@ class Wallace(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]],
   //println("res map = " + ValueMap)
 
   for (j <- 0 until (m+n-1)) {
-  	//println("res = " + res(j))
-  	//println("index = " + List(res(j)(0), j))
-  	res0(j) := ValueMap(List(res(j)(0), j))
-  	//println("valuemap = " + List(res(j)(0), j))
-  	if (res(j)(1) == -1) {
-  	  res1(j) := 0.asUInt()
-  	} else {
-  	  //println("test = " + List(res(j)(1), j))
-  	  res1(j) := ValueMap(List(res(j)(1), j))
-  	}
-  	//println("finish column = " + j)
+    //println("res = " + res(j))
+    //println("index = " + List(res(j)(0), j))
+    res0(j) := ValueMap(List(res(j)(0), j))
+    //println("valuemap = " + List(res(j)(0), j))
+    if (res(j)(1) == -1) {
+      res1(j) := 0.asUInt()
+    } else {
+      //println("test = " + List(res(j)(1), j))
+      res1(j) := ValueMap(List(res(j)(1), j))
+    }
+    //println("finish column = " + j)
+  }
+  //println("res0 = " + res0.reverse.reduce(Cat(_,_)))
+  //println("res1 = " + res0.reverse.reduce(Cat(_,_)))
+  io.augend := res0.reverse.reduce(Cat(_,_))
+  io.addend := res1.reverse.reduce(Cat(_,_))
+}
+
+class Wallace1(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]], outedges:Map[List[Int], List[Int]], res:Map[Int, List[Int]]) extends Module {
+  val io = IO(new Bundle {
+    val pp = Input(Vec(n, UInt(m.W)))
+    val accmulatend = Input(UInt((n+m-1).W))
+    val augend = Output(UInt((n+m).W))
+    val addend = Output(UInt((n+m).W))
+  })
+  
+  var ValueMap = Map[List[Int], Data]()
+
+  for (i <- 0 until n) {
+    for (j <- 0 until m) {
+      var tmpx = i
+      var tmpy = i+j
+      var fy = tmpy
+      var fx = 0
+      if (tmpy >= m) {
+        var move = tmpy-m+1
+        fx = tmpx-move
+      } else {
+        fx = tmpx
+      }
+      //println("(" + i + " " + j + ")" + "->" + "(" + tmpx + " " + tmpy + ")" + "->" + "(" + fx + " " + fy + ")")
+      ValueMap += List(fx, fy) -> io.pp(i)(j)
+    }
+  }
+
+  for (i <- 0 until (n+m-1)) {
+    var move = 0;
+    if (m >= n) {
+      if (i < n - 1) {
+        move = n - 1 - i;
+      }
+      else if (i >= m) {
+        move = i - m + 1;
+      }
+      else {
+        move = 0;
+      }  
+    }
+    else {
+      var min = n - m;
+      if (i < m - 1) {
+        move = m - 1 - i + min;
+      }
+      else if (i > n - 1){
+        move = i - n + 1 + min;
+      }
+      else {
+        move = min;
+      }
+    }
+    ValueMap += List(n-move, i) -> io.accmulatend(i)
+  }
+
+  println("finish initialize")
+  println(ValueMap)
+
+  val len = myarch.length
+  var depth = 0
+  var ind = 500
+  var i = 0
+  var cnt = new Array[Int](256)
+  while(i < len) {
+    if (myarch(i) > ind) {
+      depth += 1
+      for (j <- 0 until (n+m)) {
+        cnt(j) = 0
+      }
+    }
+    ind = myarch(i)
+    cnt(myarch(i)) += 1
+
+    if (myarch(i+1) == 0) {
+      val cmp22 = Module(new HalfAdder)
+      val tmpin = inedges(List(myarch(i), depth, cnt(myarch(i))))
+      cmp22.io.a := ValueMap(List(tmpin(0), tmpin(1)))
+      cmp22.io.b := ValueMap(List(tmpin(0)+1, tmpin(1)))
+      val tmpout = outedges(List(myarch(i), depth, cnt(myarch(i))))
+      ValueMap += List(tmpout(0), tmpout(1)) -> cmp22.io.s
+      ValueMap += List(tmpout(2), tmpout(3)) -> cmp22.io.co
+    }
+    else if (myarch(i+1) == 1) {
+      val cmp32 = Module(new FullAdder)
+      val tmpin = inedges(List(myarch(i), depth, cnt(myarch(i))))
+      cmp32.io.a := ValueMap(List(tmpin(0), tmpin(1)))
+      cmp32.io.b := ValueMap(List(tmpin(0)+1, tmpin(1)))
+      cmp32.io.ci := ValueMap(List(tmpin(0)+2, tmpin(1)))
+      val tmpout = outedges(List(myarch(i), depth, cnt(myarch(i))))
+      ValueMap += List(tmpout(0), tmpout(1)) -> cmp32.io.s
+      ValueMap += List(tmpout(2), tmpout(3)) -> cmp32.io.co
+      //println("my test co = " + List(tmpout(2), tmpout(3)) )
+    }
+    i += 2
+    //println("finish i-th compressor = " + i)
+  }
+  val res0 = (0 until (m+n)).map(i => Wire(UInt(1.W)))
+  val res1 = (0 until (m+n)).map(i => Wire(UInt(1.W)))
+
+  //println("res map = " + ValueMap)
+
+  for (j <- 0 until (m+n)) {
+    //println("res = " + res(j))
+    //println("index = " + List(res(j)(0), j))
+    res0(j) := ValueMap(List(res(j)(0), j))
+    //println("valuemap = " + List(res(j)(0), j))
+    if (res(j)(1) == -1) {
+      res1(j) := 0.asUInt()
+    } else {
+      //println("test = " + List(res(j)(1), j))
+      res1(j) := ValueMap(List(res(j)(1), j))
+    }
+    //println("finish column = " + j)
   }
   io.augend := res0.reverse.reduce(Cat(_,_))
   io.addend := res1.reverse.reduce(Cat(_,_))

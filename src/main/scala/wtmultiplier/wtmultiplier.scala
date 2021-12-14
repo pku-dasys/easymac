@@ -36,6 +36,7 @@ class WTMultiplier(m:Int, n:Int, myarchw:List[Int], inedges:Map[List[Int], List[
   io.outs := ppa.io.outs
 }
 
+/*
 object test{
   val usage = """
       Usage: generate [--input1-bit input1] [--input2-bit input2] [--compressor-file filename1] [--prefix-adder-file filename2]
@@ -124,4 +125,4 @@ class WTMultiplierTester(c: WTMultiplier) extends PeekPokeTester(c) {
   println("The result of 15 * 8 with is: " + peek(c.io.outs).toString())
 
   expect(c.io.outs, 120)
-}
+}*/
