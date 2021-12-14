@@ -1,5 +1,5 @@
-# multiplier-generator
-This is a multiplier-generator written in chisel
+# easymac
+A chisel-based multiplier-accumulator generator.
 
 ## Environment Setup
 
@@ -33,6 +33,11 @@ Chisel will be installed automatically according to build.sbt the first time you
 You should install Verilator for simulation.
 ```
 sudo apt-get install verilator
+```
+
+## Run
+```
+sbt "test:runMain mac.test --compressor-network (compressor representation file) --final-adder (adder representation file) -- accmululator-file (adder representation file)"
 ```
 
 
