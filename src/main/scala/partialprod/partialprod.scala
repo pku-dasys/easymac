@@ -14,11 +14,8 @@ class PartialProd(m: Int, n:Int) extends Module {
   	val tmp = (0 until m).map(j => Wire(UInt(1.W)))
   	for (j <- 0 until m) {
   	  tmp(j) := io.multiplicand(j) & io.multiplier(i)
-  	  //printf(p"tmp(j) = ${tmp(j)}\n")
   	}
-  	//io.outs(i) := tmp.reverse.reduce(Cat(_,_))
     io.outs(i) := tmp.reverse.reduce(Cat(_,_))
-  	//printf(p"io.outs(i) = ${io.outs(i)}\n")
   }
 }
 /*

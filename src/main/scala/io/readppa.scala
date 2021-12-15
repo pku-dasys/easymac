@@ -19,7 +19,6 @@ object ReadPPA {
   // get bits of an adder
   def getBits(array:Array[String]) : List[Int] = {
     val inputbits = array(0).trim.split(" ")
-    //val res = inputbits(0).toInt :: inputbits(1).toInt :: Nil
     val res = inputbits(0).toInt :: Nil
     res
   }
@@ -55,25 +54,16 @@ object ReadPPA {
   
   def genPEdge(n:Int, dep:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
     val len = myarch.length
-    //var vis = (0 until n).map(i => 0).toList
     var pedge = Map[List[Int], List[Int]]()
-    //var isprefix = Map[List[Int], Int]()
 
     var tmpl = Map[Int, Int]()
     var tmplev = Map[Int, Int]()
 
     // initialize
     for (i <- 0 until n) {
-      //isprefix += List(-1, i) -> 1
       tmpl += i -> i
       tmplev += i -> -1
     }
-    /*
-    for (i <- 0 until dep) {
-      for (j <- -1 until n) {
-        isprefix += List(i, j) -> 0
-      }
-    }*/
 
     for (i <- 0 until len) {
       var x=myarch(i)
@@ -103,7 +93,6 @@ object ReadPPA {
 
     // initialize
     for (i <- 0 until n) {
-      //isprefix += List(-1, i) -> 1
       tmpl += i -> i
       tmplev += i -> -1
     }
@@ -143,7 +132,6 @@ object ReadPPA {
 
     // initialize
     for (i <- 0 until n) {
-      //isprefix += List(-1, i) -> 1
       tmpl += i -> i
       tmplev += i -> -1
     }

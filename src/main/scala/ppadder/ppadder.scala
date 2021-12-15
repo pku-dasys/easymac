@@ -11,17 +11,6 @@ import java.io.File
 
 import scala.io.Source
 
-//import collection.mutable.Map
-/*
-class PPAdder(n:Int) extends Module {
-  
-  val io = IO(new Bundle {
-    val augend = Input(UInt(n.W))
-    val addend = Input(UInt(n.W))
-    val outs = Output(UInt(n.W))
-  })
-  io.outs := io.addend + io.augend
-}*/
 
 class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Map[List[Int], List[Int]], post:Map[Int, Int]) extends Module {
   val io = IO(new Bundle {
@@ -31,9 +20,6 @@ class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Ma
   })
   
   // pre-computations
-
-  //val debugg = (0 until n).map(i => Wire(UInt(1.W))) // debug
-  //val debugp = (0 until n).map(i => Wire(UInt(1.W))) // debug
   var tmpl = Map[Int, Int]()
   var tmplev = Map[Int, Int]()
 
@@ -51,8 +37,6 @@ class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Ma
     pg.io.i_b := io.addend(i)
     GMap += List(-1, i) -> pg.io.o_g
     PMap += List(-1, i) -> pg.io.o_p
-    //debugg(i) := GMap(List(-1, i))
-    //debugp(i) := PMap(List(-1, i))
   }
   // prefix graph
   val len = myarch.length
@@ -75,7 +59,6 @@ class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Ma
     }
     tmplev += myarch(i) -> d3
     tmpl += myarch(i) -> tmpl(y)
-    //println("debug: " + depth + " " + myarch(i))
     val black = Module(new Black)
     black.io.i_gk := GMap(gedge(List(d3, x)))
     black.io.i_pk := PMap(gedge(List(d3, x)))
@@ -92,24 +75,13 @@ class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Ma
   val res = (0 until n).map(i => Wire(UInt(1.W)))
   res(0) := PMap(List(-1, 0)).asUInt() ^ 0.U
   printf(p"res(0) = ${res(0)}\n")
-
-  //val tmp = 0.U(1.W)
-
-  //val res0 = PMap(List(-1, 0)).asUInt() ^ tmp
-
-  //io.outs(0) := PMap(List(-1, 0)).asUInt()
-
-  //var res = (1 until n).map(i => (PMap(List(-1, n-i)).asUInt()^carry(n-i-1)))
-  //res = Cat(res, PMap(List(-1, 0)).asUInt() ^ 0.U)
   
   for (i <- 1 until n) {
     val resi = PMap(List(-1, i)).asUInt() ^ carry(i-1).asUInt()
     res(i) := resi.asUInt()
-    //printf(p"res(${i}) = ${res(i)}\n")
   }
 
   io.outs := res.reverse.reduce(Cat(_,_))
-  //io.outs := res
 }
 
 /*
@@ -130,29 +102,21 @@ object test{
 
     val filename1 = argmap("--prefix-adder-file")
 
-    println(filename1)
     val filecontent = ReadPPA.readFromPPATxt(filename1)
 
     val n = ReadPPA.getBits(filecontent)(0)
-    println("A " + n + "-bit parallel prefix adder")
 
     val numcells = ReadPPA.getNumCells(filecontent)(0)
-    println("The prefix nodes are: " + numcells)
 
     val myarch = ReadPPA.getArch(filecontent)
-    println(myarch)
 
     val dep = ReadPPA.getDepth(myarch)
-    println("The depth is: " + dep)
 
     val pedge = ReadPPA.genPEdge(n, dep, myarch)
-    println(pedge)
 
     val gedge = ReadPPA.genGEdge(n, dep, myarch)
-    println(gedge)
 
     val pos = ReadPPA.genFinal(n, myarch)
-    println(pos)
 
     val topDesign = () => new PPAdder(n, myarch, pedge, gedge, pos)
     chisel3.Driver.execute(Array("-td", "./RTL/ppadder"), topDesign)

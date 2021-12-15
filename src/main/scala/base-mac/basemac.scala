@@ -31,9 +31,6 @@ object test{
   	val input1 = argmap("--input1-bit").toInt
   	val input2 = argmap("--input2-bit").toInt
 
-  	println(input1)
-  	println(input2)
-
   	val topDesign = () => new BasicMAC(input1, input2)
     chisel3.Driver.execute(Array("-td", "./RTL/basicmac"), topDesign)
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {

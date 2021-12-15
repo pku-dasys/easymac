@@ -36,7 +36,7 @@ object ReadWT {
     res
   }
 
-  // get depth of a wallace tree
+  // get depth of a compressor network
   def getDepth(myarch:List[Int]) : Int = {
     val len = myarch.length
     var dep = 1
@@ -52,15 +52,13 @@ object ReadWT {
     dep
   }
 
-  /// @params[out]: key List[Int] = (column, depth, id), value List[Int] = (row, column)
+
   def getIn(m:Int, n:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
     val len = myarch.length
     var edgesin = Map[List[Int], List[Int]]()
 
-    // record the lst pos of each column
     var pos = Map[Int, Int]()
 
-    // count the number of each column of each depth
     var cnt = new Array[Int](256)
 
     for (i <- 0 until (n+m)) {
@@ -95,15 +93,12 @@ object ReadWT {
     edgesin
   }
 
-  /// @params[out]: key List[Int] = (column, depth, id), value List[Int] = (row, column)
   def getIn1(m:Int, n:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
     val len = myarch.length
     var edgesin = Map[List[Int], List[Int]]()
 
-    // record the lst pos of each column
     var pos = Map[Int, Int]()
 
-    // count the number of each column of each depth
     var cnt = new Array[Int](256)
 
     for (i <- 0 until (n+m)) {
@@ -139,15 +134,12 @@ object ReadWT {
   }
 
 
-  /// @params[out]: key List[int] = (column, depth, id), value List[Int] = (row of gen, column of gen, row of pro, column of pro)
   def getOut1(m:Int, n:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
     val len = myarch.length
     var edgesout = Map[List[Int], List[Int]]()
 
-    // record the lst pos of each column
     var pos = Map[Int, Int]()
 
-    // count the number of each column of each depth
     var cnt = new Array[Int](256)
 
     var abs = 0
@@ -159,9 +151,6 @@ object ReadWT {
       abs = n - m
       min = m
     }
-
-    println("abs = " + abs)
-    println("min = " + min)
 
     for (i <- 0 until (n+m-1)) {
       if (i < min) {
@@ -177,7 +166,6 @@ object ReadWT {
       }
     }
     pos += (n+m-1) -> 0
-    println("pos = " + pos )
 
     var depth = 0
     var ind = 500
@@ -201,15 +189,12 @@ object ReadWT {
     edgesout
   }
 
-  /// @params[out]: key List[int] = (column, depth, id), value List[Int] = (row of gen, column of gen, row of pro, column of pro)
   def getOut(m:Int, n:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
     val len = myarch.length
     var edgesout = Map[List[Int], List[Int]]()
 
-    // record the lst pos of each column
     var pos = Map[Int, Int]()
 
-    // count the number of each column of each depth
     var cnt = new Array[Int](256)
 
     var abs = 0
@@ -222,9 +207,6 @@ object ReadWT {
       min = m
     }
 
-    println("abs = " + abs)
-    println("min = " + min)
-
     for (i <- 0 until (n+m)) {
       if (i < min) {
         pos += i -> (i+1) 
@@ -235,7 +217,6 @@ object ReadWT {
         pos += i -> (m+n-i-1)
       }
     }
-    println("out pos = " + pos )
 
     var depth = 0
     var ind = 500
@@ -263,15 +244,12 @@ object ReadWT {
   def getRes(m:Int, n:Int, myarch:List[Int]) : Map[Int, List[Int]] = {
     val len = myarch.length
     var res = Map[Int, List[Int]]()
-    // stat the compressors of each column List[Int] = {column, the type of compressors}
     var compressors = Map[List[Int], Int]()
-    // record the lst pos of each column
+
     var pos = Map[Int, Int]()
 
-    // count the number of each column of each depth
     var cnt = new Array[Int](256)
 
-    // count the number of residual of each column
     var resi = new Array[Int](256)
 
     var abs = 0
@@ -285,7 +263,6 @@ object ReadWT {
       min = m
     }
 
-    // initialize
     for (i <- 0 until (n+m)) {
       if (i < min) {
         pos += i -> (i+1) 
@@ -295,7 +272,6 @@ object ReadWT {
         pos += i -> min
         cnt(i) = min
       } else {
-        //cnt(i) = min - (i-(min+abs)+1)
         cnt(i) = m + n -i-1
         pos += i -> (m + n -i-1)
       }
@@ -326,98 +302,9 @@ object ReadWT {
       var num2 = compressors(List(j-1, 0))
       var num3 = compressors(List(j-1, 1))
       resi(j) = cnt(j) + num2 + num3 + num0 + num1 - 2*num0 - 3*num1
-      println("haha j=" + j + " cnt=" + cnt(j) + " num0=" + num0 + " num1=" + num1 + " num2=" + num2 + " num3=" + num3)
       if (resi(j) < 0 || resi(j) > 2) {
         println("Wrong Compressors Structure! and column = " + j + " and res=" + resi(j))
-      }
-      //assert(resi(j) >= 0 && resi(j) <= 2, "Wrong Compressors Structure!")    
-    }
-
-    for (j <- 0 until (n+m)) {
-      if (resi(j) == 1) {
-        res += j -> List(pos(j)-1, -1)
-      }
-      else if (resi(j) == 2) {
-        res += j -> List(pos(j)-2, pos(j)-1)
-      } else {
-        println("Wrong Compressors Results! and column = " + j)
-      }
-    }
-    res
-  }
-
-  def getRes1(m:Int, n:Int, myarch:List[Int]) : Map[Int, List[Int]] = {
-    val len = myarch.length
-    var res = Map[Int, List[Int]]()
-    // stat the compressors of each column List[Int] = {column, the type of compressors}
-    var compressors = Map[List[Int], Int]()
-    // record the lst pos of each column
-    var pos = Map[Int, Int]()
-
-    // count the number of each column of each depth
-    var cnt = new Array[Int](256)
-
-    // count the number of residual of each column
-    var resi = new Array[Int](256)
-
-    var abs = 0
-    var min = 0
-    if (m > n) {
-      abs = m - n
-      min = n
-    } else {
-      abs = n - m
-      min = m
-    }
-
-    // initialize
-    for (i <- 0 until (n+m-1)) {
-      if (i < min) {
-        var ttmp = (i+1)+1
-        pos += i -> ttmp
-        cnt(i) = ttmp
-      }
-      else if (i >= min && i < (min + abs)) {
-        var ttmp = (1 + min)+1
-        pos += i -> ttmp
-        cnt(i) = ttmp
-      } else {
-        var ttmp = (n+m-i-1) +1
-        pos += i -> ttmp
-        cnt(i) = ttmp
-      }
-      compressors += List(i, 0) -> 0
-      compressors += List(i, 1) -> 0
-    }
-    pos += (n+m-1) -> 0
-    cnt(n+m-1) = 0
-    compressors += List(n+m-1, 0) -> 0
-    compressors += List(n+m-1, 1) -> 0
-
-    var i = 0
-    while(i < len) {
-      var tmp = compressors(List(myarch(i), myarch(i+1)))
-      compressors += List(myarch(i), myarch(i+1)) -> (tmp+1)
-      i += 2
-    }
-
-    i = 0
-    while(i < len) {
-      var tmp = pos(myarch(i))
-      var tmp1 = pos(myarch(i)+1)
-      pos += myarch(i) -> (tmp+1)
-      pos += (myarch(i)+1) -> (tmp1+1)
-      i += 2
-    }
-
-    resi(0) = 1
-    for (j <- 1 until (n+m)) {
-      var num0 = compressors(List(j, 0))
-      var num1 = compressors(List(j, 1))
-      var num2 = compressors(List(j-1, 0))
-      var num3 = compressors(List(j-1, 1))
-      resi(j) = cnt(j) + num2 + num3 + num0 + num1 - 2*num0 - 3*num1
-      assert(resi(j) >= 0 && resi(j) <= 2, "Wrong Compressors Structure!")    
+      } 
     }
 
     for (j <- 0 until (n+m)) {

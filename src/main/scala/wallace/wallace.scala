@@ -4,7 +4,6 @@ import io._
 import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
 import chisel3.{Bundle, Input, Module, Output, UInt, _}
-//import chisel3.{Bundle, _}
 
 import java.io.PrintWriter
 import java.io.File
@@ -32,13 +31,10 @@ class Wallace(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]],
       } else {
         fx = tmpx
       }
-      //println("(" + i + " " + j + ")" + "->" + "(" + tmpx + " " + tmpy + ")" + "->" + "(" + fx + " " + fy + ")")
       ValueMap += List(fx, fy) -> io.pp(i)(j)
     }
   }
 
-  //println("finish initialize")
-  //println("test value (0,4) = " + ValueMap(List(0, 4)))
   val len = myarch.length
   var depth = 0
   var ind = 500
@@ -72,31 +68,21 @@ class Wallace(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]],
       val tmpout = outedges(List(myarch(i), depth, cnt(myarch(i))))
       ValueMap += List(tmpout(0), tmpout(1)) -> cmp32.io.s
       ValueMap += List(tmpout(2), tmpout(3)) -> cmp32.io.co
-      //println("my test co = " + List(tmpout(2), tmpout(3)) )
     }
     i += 2
-    //println("finish i-th compressor = " + i)
   }
   val res0 = (0 until (m+n-1)).map(i => Wire(UInt(1.W)))
   val res1 = (0 until (m+n-1)).map(i => Wire(UInt(1.W)))
 
-  //println("res map = " + ValueMap)
 
   for (j <- 0 until (m+n-1)) {
-    //println("res = " + res(j))
-    //println("index = " + List(res(j)(0), j))
     res0(j) := ValueMap(List(res(j)(0), j))
-    //println("valuemap = " + List(res(j)(0), j))
     if (res(j)(1) == -1) {
       res1(j) := 0.asUInt()
     } else {
-      //println("test = " + List(res(j)(1), j))
       res1(j) := ValueMap(List(res(j)(1), j))
     }
-    //println("finish column = " + j)
   }
-  //println("res0 = " + res0.reverse.reduce(Cat(_,_)))
-  //println("res1 = " + res0.reverse.reduce(Cat(_,_)))
   io.augend := res0.reverse.reduce(Cat(_,_))
   io.addend := res1.reverse.reduce(Cat(_,_))
 }
@@ -123,7 +109,6 @@ class Wallace1(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]]
       } else {
         fx = tmpx
       }
-      //println("(" + i + " " + j + ")" + "->" + "(" + tmpx + " " + tmpy + ")" + "->" + "(" + fx + " " + fy + ")")
       ValueMap += List(fx, fy) -> io.pp(i)(j)
     }
   }
@@ -156,9 +141,6 @@ class Wallace1(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]]
     ValueMap += List(n-move, i) -> io.accmulatend(i)
   }
 
-  println("finish initialize")
-  println(ValueMap)
-
   val len = myarch.length
   var depth = 0
   var ind = 500
@@ -192,28 +174,20 @@ class Wallace1(m:Int, n:Int, myarch:List[Int], inedges:Map[List[Int], List[Int]]
       val tmpout = outedges(List(myarch(i), depth, cnt(myarch(i))))
       ValueMap += List(tmpout(0), tmpout(1)) -> cmp32.io.s
       ValueMap += List(tmpout(2), tmpout(3)) -> cmp32.io.co
-      //println("my test co = " + List(tmpout(2), tmpout(3)) )
     }
     i += 2
-    //println("finish i-th compressor = " + i)
   }
   val res0 = (0 until (m+n)).map(i => Wire(UInt(1.W)))
   val res1 = (0 until (m+n)).map(i => Wire(UInt(1.W)))
 
-  //println("res map = " + ValueMap)
 
   for (j <- 0 until (m+n)) {
-    //println("res = " + res(j))
-    //println("index = " + List(res(j)(0), j))
     res0(j) := ValueMap(List(res(j)(0), j))
-    //println("valuemap = " + List(res(j)(0), j))
     if (res(j)(1) == -1) {
       res1(j) := 0.asUInt()
     } else {
-      //println("test = " + List(res(j)(1), j))
       res1(j) := ValueMap(List(res(j)(1), j))
     }
-    //println("finish column = " + j)
   }
   io.augend := res0.reverse.reduce(Cat(_,_))
   io.addend := res1.reverse.reduce(Cat(_,_))
@@ -235,30 +209,22 @@ object test{
 
     val filename1 = argmap("--wallace-file")
 
-    println(filename1)
     val filecontent = ReadWT.readFromWTTxt(filename1)
 
     val m = ReadWT.getBits(filecontent)(0)
     val n = ReadWT.getBits(filecontent)(1)
-    println("A " + m + "*" + n + "-bit compressor tree")
 
     val numcells = ReadWT.getNumCells(filecontent)(0)
-    println("The compressors are: " + numcells)
 
     val myarch = ReadWT.getArch(filecontent)
-    println(myarch)
 
     val depth = ReadWT.getDepth(myarch)
-    println(depth)
 
     val inedges = ReadWT.getIn(m, n, myarch)
-    println(inedges)
 
     val outedges = ReadWT.getOut(m, n, myarch)
-    println(outedges)
 
     val res = ReadWT.getRes(m, n, myarch)
-    println(res)
 
     val topDesign = () => new Wallace(m, n, myarch, inedges, outedges, res)
     chisel3.Driver.execute(Array("-td", "./RTL/wt"), topDesign)
