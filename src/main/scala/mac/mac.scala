@@ -15,15 +15,14 @@ import java.io.File
 
 import scala.io.Source
 
-
-class MAC(m:Int, n:Int, myarchw:List[Int], inedges:Map[List[Int], List[Int]], outedges:Map[List[Int], List[Int]], res:Map[Int, List[Int]], 
-	               myarcha:List[Int], pedge:Map[List[Int], List[Int]], gedge:Map[List[Int], List[Int]], post:Map[Int, Int],
-	               myarcha2:List[Int], pedge2:Map[List[Int], List[Int]], gedge2:Map[List[Int], List[Int]], post2:Map[Int, Int]) extends Module {
+class MAC(m: Int, n: Int, myarchw: List[Int], inedges: Map[List[Int], List[Int]], outedges: Map[List[Int], List[Int]], res: Map[Int, List[Int]],
+          myarcha: List[Int], pedge: Map[List[Int], List[Int]], gedge: Map[List[Int], List[Int]], post: Map[Int, Int],
+          myarcha2: List[Int], pedge2: Map[List[Int], List[Int]], gedge2: Map[List[Int], List[Int]], post2: Map[Int, Int]) extends Module {
   val io = IO(new Bundle {
     val multiplicand = Input(UInt(m.W))
     val multiplier = Input(UInt(n.W))
-    val addend = Input(UInt((m+n-1).W))
-    val outs = Output(UInt((m+n-1).W))
+    val addend = Input(UInt((m + n - 1).W))
+    val outs = Output(UInt((m + n - 1).W))
   })
 
   val pp = Module(new PartialProd(m, n))
@@ -33,47 +32,48 @@ class MAC(m:Int, n:Int, myarchw:List[Int], inedges:Map[List[Int], List[Int]], ou
   val wt = Module(new Wallace(m, n, myarchw, inedges, outedges, res))
   wt.io.pp := pp.io.outs
 
-  val ppa1 = Module(new PPAdder((m+n-1), myarcha, pedge, gedge, post))
+  val ppa1 = Module(new PPAdder((m + n - 1), myarcha, pedge, gedge, post))
   ppa1.io.augend := wt.io.augend
   ppa1.io.addend := wt.io.addend
 
-  val ppa2 = Module(new PPAdder((m+n-1), myarcha2, pedge2, gedge2, post2))
+  val ppa2 = Module(new PPAdder((m + n - 1), myarcha2, pedge2, gedge2, post2))
   ppa2.io.augend := ppa1.io.outs
   ppa2.io.addend := io.addend
 
   io.outs := ppa2.io.outs
 }
 
-class MAC1(m:Int, n:Int, myarchw:List[Int], inedges:Map[List[Int], List[Int]], outedges:Map[List[Int], List[Int]], res:Map[Int, List[Int]], 
-	               myarcha:List[Int], pedge:Map[List[Int], List[Int]], gedge:Map[List[Int], List[Int]], post:Map[Int, Int],
-	               myarcha2:List[Int], pedge2:Map[List[Int], List[Int]], gedge2:Map[List[Int], List[Int]], post2:Map[Int, Int]) extends Module {
+class MAC1(m: Int, n: Int, myarchw: List[Int], inedges: Map[List[Int], List[Int]], outedges: Map[List[Int], List[Int]], res: Map[Int, List[Int]],
+           myarcha: List[Int], pedge: Map[List[Int], List[Int]], gedge: Map[List[Int], List[Int]], post: Map[Int, Int],
+           myarcha2: List[Int], pedge2: Map[List[Int], List[Int]], gedge2: Map[List[Int], List[Int]], post2: Map[Int, Int]) extends Module {
   val io = IO(new Bundle {
     val multiplicand = Input(UInt(m.W))
     val multiplier = Input(UInt(n.W))
-    val addend = Input(UInt((m+n-1).W))
-    val outs = Output(UInt((m+n-1).W))
+    val addend = Input(UInt((m + n - 1).W))
+    val outs = Output(UInt((m + n - 1).W))
   })
 
   val wtm = Module(new WTMultiplier(m, n, myarchw, inedges, outedges, res, myarcha, pedge, gedge, post))
   wtm.io.multiplicand := io.multiplicand
   wtm.io.multiplier := io.multiplier
 
-  val ppa = Module(new PPAdder((m+n-1), myarcha2, pedge2, gedge2, post2))
+  val ppa = Module(new PPAdder((m + n - 1), myarcha2, pedge2, gedge2, post2))
   ppa.io.augend := wtm.io.outs
   ppa.io.addend := io.addend
 
   io.outs := ppa.io.outs
 }
 
-
-object test{
-  val usage = """
-      Usage: generate [--compressor-file filename1] [--prefix-adder-file filename2] [--accmulator-file filename3]
+object test {
+  val usage =
+    """
+      Usage: generate [--compressor-file filename1] [--prefix-adder-file filename2] [--accumulator-file filename3]
   """
+
   def main(args: Array[String]): Unit = {
-    
+
     if (args.length == 0) println(usage)
-    
+
     val arglist = args.toList
 
     //type OptionMap = Map[Symbol, Any]
@@ -152,7 +152,7 @@ class MACTester(c: MAC) extends PeekPokeTester(c) {
   poke(c.io.multiplicand, 7)
   poke(c.io.multiplier, 2)
   poke(c.io.addend, 1)
-  
+
   step(1)
 
   println("The result of 7 * 2 + 1 is: " + peek(c.io.outs).toString())

@@ -32,7 +32,7 @@ sudo apt-get install verilator
 ```
 
 ## Run
-Run `sbt "test:runMain mac.test --compressor-file <compressor-representation-file> --prefix-adder-file <adder-representation-file> --accumulator-file <adder-representation-file>"`.
+Run `sbt "Test/runMain mac.test --compressor-file <compressor-representation-file> --prefix-adder-file <adder-representation-file> --accumulator-file <adder-representation-file>"`.
 Sample representation files are under [`benchmarks/`](benchmarks/).
 For example,
 ```
