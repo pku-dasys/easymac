@@ -123,7 +123,7 @@ class HighQualityAdder(w: Int) extends Module {
 object test {
   def main(args: Array[String]): Unit = {
     val topDesign = () => new HighQualityAdder(4)
-    chisel3.Driver.execute(Array("-td", "./RTL/"), topDesign)
+    (new chisel3.stage.ChiselStage).emitVerilog(topDesign(), Array("-td", "./RTL/"))
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
       c => new HighQualityAdderTester(c)
     }

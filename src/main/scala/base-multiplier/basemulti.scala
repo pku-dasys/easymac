@@ -17,7 +17,7 @@ class BasicMultiplier(m: Int, n:Int) extends Module{
 object test{
   def main(args: Array[String]): Unit = {
     val topDesign = () => new BasicMultiplier(16, 16)
-    chisel3.Driver.execute(Array("-td", "./RTL/basicmulti"), topDesign)
+    (new chisel3.stage.ChiselStage).emitVerilog(topDesign(), Array("-td", "./RTL/basicmulti"))
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
       c => new BasicMultiplierTester(c)
     }

@@ -82,7 +82,7 @@ object test{
 
     val filename1 = argmap("--compressor-file")
     val filename2 = argmap("--prefix-adder-file")
-    val filename3 = argmap("--accmulator-file")
+    val filename3 = argmap("--accumulator-file")
 
     val filecontent = ReadWT.readFromWTTxt(filename1)
 
@@ -137,7 +137,7 @@ object test{
     val pos2 = ReadPPA.genFinal(l, myarcha)
 
     val topDesign = () => new MAC(m, n, myarchw, inedges, outedges, res, myarcha, pedge, gedge, pos, myarcha2, pedge2, gedge2, pos2)
-    chisel3.Driver.execute(Array("-td", "./RTL/mac"), topDesign)
+    (new chisel3.stage.ChiselStage).emitVerilog(topDesign(), Array("-td", "./RTL/mac"))
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
       c => new MACTester(c)
     }

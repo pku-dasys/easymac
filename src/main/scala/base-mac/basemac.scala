@@ -32,7 +32,7 @@ object test{
   	val input2 = argmap("--input2-bit").toInt
 
   	val topDesign = () => new BasicMAC(input1, input2)
-    chisel3.Driver.execute(Array("-td", "./RTL/basicmac"), topDesign)
+    (new chisel3.stage.ChiselStage).emitVerilog(topDesign(), Array("-td", "./RTL/basicmac"))
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
       c => new BasicMACTester(c)
     }
