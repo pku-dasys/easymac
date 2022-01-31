@@ -245,10 +245,10 @@ object ReadWT {
    * A procedure to help generate a compressor network for a multiplication unit.
    *
    * An `m`-bit multiplicand multiplying an `n`-bit multiplier generates `m*n`-bit partial products.
-   * The bits in the partial products are represented by dots, intially in a trapezoidal shape.
+   * The bits in the partial products are represented by dots, initially in a trapezoidal shape.
    * In the code, we simulate the dot compression process using the compressors in `myarch`.
    * During compression, any new bit is stacked in a higher row number in the corresponding column.
-   * The row numbers of remaining dots in each column are returned to the generator.
+   * The row numbers of the remaining dots in each column are returned to the generator.
    *
    * @param m      The bit width of the multiplicand.
    * @param n      The bit width of the multiplier.

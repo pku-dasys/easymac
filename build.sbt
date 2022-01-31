@@ -49,11 +49,11 @@ resolvers ++= Seq(
 )
 
 // Recommendations from http://www.scalatest.org/user_guide/using_scalatest_with_sbt
-logBuffered in Test := false
+Test/logBuffered := false
 
 // Disable parallel execution when running tests.
 //  Running tests in parallel on Jenkins currently fails.
-parallelExecution in Test := false
+Test/parallelExecution := false
 
 scalacOptions ++= scalacOptionsVersion(scalaVersion.value)
 
