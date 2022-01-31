@@ -141,10 +141,6 @@ object test {
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
       c => new MACTester(c)
     }
-
-    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new MAC(m, n, myarchw, inedges, outedges, res, myarcha, pedge, gedge, pos, myarcha2, pedge2, gedge2, pos2)) {
-      c => new MACTester(c)
-    }
   }
 }
 

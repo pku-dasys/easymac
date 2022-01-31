@@ -122,12 +122,11 @@ class HighQualityAdder(w: Int) extends Module {
 
 object test {
   def main(args: Array[String]): Unit = {
-    val topDesign = () => new HighQualityAdder(4)
-    (new chisel3.stage.ChiselStage).emitVerilog(topDesign(), Array("-td", "./RTL/"))
-    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), topDesign) {
+    (new chisel3.stage.ChiselStage).emitVerilog(new HighQualityAdder(4), Array("-td", "./RTL/"))
+
+    iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new HighQualityAdder(4)) {
       c => new HighQualityAdderTester(c)
     }
-
     iotesters.Driver.execute(Array("-tgvo", "on", "-tbn", "verilator"), () => new HighQualityAdder(8)) {
       c => new HighQualityAdderTester(c)
     }
