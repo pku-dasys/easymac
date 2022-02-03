@@ -8,37 +8,37 @@ import scala.io.Source
 import scala.util.control._
 
 object ReadPPA {
-  def readFromPPATxt(filePath:String) = {
+  def readFromPPATxt(filePath: String) = {
     val source = Source.fromFile(filePath, "UTF-8")
 
     val lines = source.getLines().toArray
     source.close
     lines
   }
-  
+
   // get bits of an adder
-  def getBits(array:Array[String]) : List[Int] = {
+  def getBits(array: Array[String]): List[Int] = {
     val inputbits = array(0).trim.split(" ")
     val res = inputbits(0).toInt :: Nil
     res
   }
 
   // get the number of prefix cells
-  def getNumCells(array:Array[String]) : List[Int] = {
+  def getNumCells(array: Array[String]): List[Int] = {
     val numcells = array(1).trim.split(" ")
-    val res = numcells(0).toInt:: Nil
+    val res = numcells(0).toInt :: Nil
     res
   }
 
   // get arch description sequence
-  def getArch(array:Array[String]) : List[Int] = {
-    val arraywithoutbits = array.takeRight(array.length-2)
+  def getArch(array: Array[String]): List[Int] = {
+    val arraywithoutbits = array.takeRight(array.length - 2)
     val res = arraywithoutbits.map(s => s.trim.split(" ").map(i => i.toInt).toList).reduce(_ ::: _)
     res
   }
 
   // get depth of a prefix graph
-  def getDepth(myarch:List[Int]) : Int = {
+  def getDepth(myarch: List[Int]): Int = {
     val len = myarch.length
     var dep = 1
     var ind = 500
@@ -51,8 +51,8 @@ object ReadPPA {
     dep
   }
 
-  
-  def genPEdge(n:Int, dep:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
+
+  def genPEdge(n: Int, dep: Int, myarch: List[Int]): Map[List[Int], List[Int]] = {
     val len = myarch.length
     var pedge = Map[List[Int], List[Int]]()
 
@@ -66,8 +66,8 @@ object ReadPPA {
     }
 
     for (i <- 0 until len) {
-      var x=myarch(i)
-      var y=tmpl(myarch(i))-1
+      var x = myarch(i)
+      var y = tmpl(myarch(i)) - 1
       var d1 = tmplev(x)
       var d2 = tmplev(y)
       var d3 = 0
@@ -83,7 +83,7 @@ object ReadPPA {
     pedge
   }
 
-  def genGEdge(n:Int, dep:Int, myarch:List[Int]) : Map[List[Int], List[Int]] = {
+  def genGEdge(n: Int, dep: Int, myarch: List[Int]): Map[List[Int], List[Int]] = {
     val len = myarch.length
     var gedge = Map[List[Int], List[Int]]()
     var isprefix = Map[List[Int], Int]()
@@ -103,8 +103,8 @@ object ReadPPA {
     }
 
     for (i <- 0 until len) {
-      var x=myarch(i)
-      var y=tmpl(myarch(i))-1
+      var x = myarch(i)
+      var y = tmpl(myarch(i)) - 1
       var d1 = tmplev(x)
       var d2 = tmplev(y)
       var d3 = 0
@@ -120,7 +120,7 @@ object ReadPPA {
     gedge
   }
 
-  def genFinal(n:Int, myarch:List[Int]) : Map[Int, Int] = {
+  def genFinal(n: Int, myarch: List[Int]): Map[Int, Int] = {
     val len = myarch.length
     var res = Map[Int, Int]()
     for (i <- 0 until n) {
@@ -137,8 +137,8 @@ object ReadPPA {
     }
 
     for (i <- 0 until len) {
-      var x=myarch(i)
-      var y=tmpl(myarch(i))-1
+      var x = myarch(i)
+      var y = tmpl(myarch(i)) - 1
       var d1 = tmplev(x)
       var d2 = tmplev(y)
       var d3 = 0
@@ -153,5 +153,5 @@ object ReadPPA {
     }
     res
   }
-  
+
 }

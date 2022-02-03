@@ -5,15 +5,15 @@ import chisel3.util._
 import chisel3.{Bundle, Input, Module, Output, UInt, _}
 
 class Compressor73 extends Module {
-  val io  = IO(new Bundle {
+  val io = IO(new Bundle {
     val I = Input(UInt(7.W))
     val O = Output(UInt(3.W))
-    })
+  })
 
   val fa1 = Module(new FullAdder())
   fa1.io.A := io.I(1)
   fa1.io.B := io.I(2)
-  fa1.io.Cin := io.I(3) 
+  fa1.io.Cin := io.I(3)
   val fs1 = fa1.io.Sum
   val fc1 = fa1.io.Cout
 

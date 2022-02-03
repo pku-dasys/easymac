@@ -10,21 +10,22 @@ import chisel3._
  */
 class GCD extends Module {
   val io = IO(new Bundle {
-    val a     = Input(UInt(16.W))
-    val b     = Input(UInt(16.W))
-    val load  = Input(Bool())
-    val out   = Output(UInt(16.W))
+    val a = Input(UInt(16.W))
+    val b = Input(UInt(16.W))
+    val load = Input(Bool())
+    val out = Output(UInt(16.W))
     val valid = Output(Bool())
   })
   val x = Reg(UInt())
   val y = Reg(UInt())
 
-  when (io.load) {
-    x := io.a; y := io.b
-  } .otherwise {
-    when (x > y) {
+  when(io.load) {
+    x := io.a;
+    y := io.b
+  }.otherwise {
+    when(x > y) {
       x := x - y
-    } .elsewhen (x <= y) {
+    }.elsewhen(x <= y) {
       y := y - x
     }
   }

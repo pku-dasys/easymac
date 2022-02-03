@@ -4,20 +4,21 @@ import chisel3.iotesters.PeekPokeTester
 import chisel3.util._
 import chisel3.{Bundle, Input, Module, Output, UInt, _}
 
-class PartialProd(m: Int, n:Int) extends Module {
-  val io  = IO(new Bundle {
-  	val multiplicand = Input(UInt(m.W))
-    val multiplier = Input(UInt(n.W)) 
+class PartialProd(m: Int, n: Int) extends Module {
+  val io = IO(new Bundle {
+    val multiplicand = Input(UInt(m.W))
+    val multiplier = Input(UInt(n.W))
     val outs = Output(Vec(n, UInt(m.W)))
-    })
+  })
   for (i <- 0 until n) {
-  	val tmp = (0 until m).map(j => Wire(UInt(1.W)))
-  	for (j <- 0 until m) {
-  	  tmp(j) := io.multiplicand(j) & io.multiplier(i)
-  	}
-    io.outs(i) := tmp.reverse.reduce(Cat(_,_))
+    val tmp = (0 until m).map(j => Wire(UInt(1.W)))
+    for (j <- 0 until m) {
+      tmp(j) := io.multiplicand(j) & io.multiplier(i)
+    }
+    io.outs(i) := tmp.reverse.reduce(Cat(_, _))
   }
 }
+
 /*
 object test{
   def main(args: Array[String]): Unit = {

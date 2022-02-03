@@ -36,5 +36,5 @@ Run `sbt "Test/runMain mac.test --compressor-file <compressor-representation-fil
 Sample representation files are under [`benchmarks/`](benchmarks/).
 For example,
 ```
-sbt "Test/runMain mac.test --compressor-file benchmarks/16x16/ct/ct.txt --prefix-adder-file benchmarks/16x16/cpa/ppa.txt --accumulator-file benchmarks/16x16/cpa/ppa.txt"
+sbt "Test/runMain mac.test --compressor-file benchmarks/16x16/ct.txt --prefix-adder-file benchmarks/16x16/ppa.txt --accumulator-file benchmarks/16x16/ppa.txt"
 ```

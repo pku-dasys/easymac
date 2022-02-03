@@ -15,11 +15,11 @@ import java.io.File
 import scala.io.Source
 
 
-class WTMultiplier(m:Int, n:Int, myarchw:List[Int], inedges:Map[List[Int], List[Int]], outedges:Map[List[Int], List[Int]], res:Map[Int, List[Int]], myarcha:List[Int], pedge:Map[List[Int], List[Int]], gedge:Map[List[Int], List[Int]], post:Map[Int, Int]) extends Module {
+class WTMultiplier(m: Int, n: Int, myarchw: List[Int], inedges: Map[List[Int], List[Int]], outedges: Map[List[Int], List[Int]], res: Map[Int, List[Int]], myarcha: List[Int], pedge: Map[List[Int], List[Int]], gedge: Map[List[Int], List[Int]], post: Map[Int, Int]) extends Module {
   val io = IO(new Bundle {
     val multiplicand = Input(UInt(m.W))
     val multiplier = Input(UInt(n.W))
-    val outs = Output(UInt((m+n-1).W))
+    val outs = Output(UInt((m + n - 1).W))
   })
 
   val pp = Module(new PartialProd(m, n))
@@ -29,7 +29,7 @@ class WTMultiplier(m:Int, n:Int, myarchw:List[Int], inedges:Map[List[Int], List[
   val wt = Module(new Wallace(m, n, myarchw, inedges, outedges, res))
   wt.io.pp := pp.io.outs
 
-  val ppa = Module(new PPAdder((m+n-1), myarcha, pedge, gedge, post))
+  val ppa = Module(new PPAdder((m + n - 1), myarcha, pedge, gedge, post))
   ppa.io.augend := wt.io.augend
   ppa.io.addend := wt.io.addend
 

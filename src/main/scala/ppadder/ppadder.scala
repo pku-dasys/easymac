@@ -12,13 +12,13 @@ import java.io.File
 import scala.io.Source
 
 
-class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Map[List[Int], List[Int]], post:Map[Int, Int]) extends Module {
+class PPAdder(n: Int, myarch: List[Int], pedge: Map[List[Int], List[Int]], gedge: Map[List[Int], List[Int]], post: Map[Int, Int]) extends Module {
   val io = IO(new Bundle {
     val augend = Input(UInt(n.W))
     val addend = Input(UInt(n.W))
     val outs = Output(UInt(n.W))
   })
-  
+
   // pre-computations
   var tmpl = Map[Int, Int]()
   var tmplev = Map[Int, Int]()
@@ -47,8 +47,8 @@ class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Ma
   assert(len1 == len2, "Wrong Parse Results")
 
   for (i <- 0 until len1) {
-    var x=myarch(i)
-    var y=tmpl(myarch(i))-1
+    var x = myarch(i)
+    var y = tmpl(myarch(i)) - 1
     var d1 = tmplev(x)
     var d2 = tmplev(y)
     var d3 = 0
@@ -75,13 +75,13 @@ class PPAdder(n:Int, myarch:List[Int], pedge:Map[List[Int], List[Int]], gedge:Ma
   val res = (0 until n).map(i => Wire(UInt(1.W)))
   res(0) := PMap(List(-1, 0)).asUInt() ^ 0.U
   printf(p"res(0) = ${res(0)}\n")
-  
+
   for (i <- 1 until n) {
-    val resi = PMap(List(-1, i)).asUInt() ^ carry(i-1).asUInt()
+    val resi = PMap(List(-1, i)).asUInt() ^ carry(i - 1).asUInt()
     res(i) := resi.asUInt()
   }
 
-  io.outs := res.reverse.reduce(Cat(_,_))
+  io.outs := res.reverse.reduce(Cat(_, _))
 }
 
 /*

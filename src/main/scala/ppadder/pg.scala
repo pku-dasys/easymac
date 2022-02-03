@@ -9,7 +9,7 @@ class Grey extends Module {
     val i_gj = Input(UInt(1.W))
     val i_pk = Input(UInt(1.W))
     val i_gk = Input(UInt(1.W))
-    val o_g  = Output(UInt(1.W))
+    val o_g = Output(UInt(1.W))
   })
   io.o_g := io.i_gk | (io.i_gj & io.i_pk);
 }
@@ -20,8 +20,8 @@ class Black extends Module {
     val i_gj = Input(UInt(1.W))
     val i_pk = Input(UInt(1.W))
     val i_gk = Input(UInt(1.W))
-    val o_g  = Output(UInt(1.W))
-    val o_p  = Output(UInt(1.W))
+    val o_g = Output(UInt(1.W))
+    val o_p = Output(UInt(1.W))
   })
   io.o_g := io.i_gk | (io.i_gj & io.i_pk)
   io.o_p := io.i_pk & io.i_pj
